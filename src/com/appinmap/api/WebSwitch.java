@@ -43,13 +43,18 @@ public class WebSwitch extends Application {
         ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
         String realm = "aim-api";
 
-        // MapVerifier isn't very secure; see docs for alternatives
-        // MapVerifier verifier = new MapVerifier();
-        // verifier.getLocalSecrets().put("com.dinakaran.mobile.iphone", "6fdabe6a-8b6e-4ba2-8404-87d9c1d4a728".toCharArray());
-
         ChallengeAuthenticator auth = new ChallengeAuthenticator(context, optional, challengeScheme, realm, new RequestVerifier()) {
             @Override
             protected boolean authenticate(Request request, Response response) {
+            	String environment = System.getProperty("com.google.appengine.runtime.environment");
+            	if (environment.equalsIgnoreCase("production")) {
+            		//Do not allow appspot.com domains and don't allow unsecure api calls
+                	if(request.getHostRef().getHostDomain().toLowerCase().endsWith("appspot.com") ||
+                			!request.getHostRef().getScheme().equalsIgnoreCase("https")) {
+                		return false;
+                	}	
+            	}
+            	
                 if (request.getChallengeResponse() == null) {
                     return false;
                 } else {
