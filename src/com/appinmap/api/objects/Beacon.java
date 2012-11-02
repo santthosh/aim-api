@@ -1,5 +1,7 @@
 package com.appinmap.api.objects;
 
+import java.util.HashSet;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -56,6 +58,9 @@ public class Beacon {
 			String sessionId = object.getString("sessionId");
 	        Key key = KeyFactory.createKey(Session.class.getSimpleName(), sessionId);
 	        Session session = pm.getObjectById(Session.class, key);
+	        
+	        if(session.getBeacons() == null)
+	        	session.setBeacons(new HashSet<Beacon>());
 	        session.getBeacons().add(beacon);
 	        
 			return beacon;

@@ -115,12 +115,12 @@ public class ApplicationHandler extends ServerResource {
 	}
 	
 	@Put("json")
-	public JsonRepresentation update(JsonRepresentation request) 
+	public void update(JsonRepresentation request) 
 	{
 		WebSwitch application = (WebSwitch) getApplication();
         if (!application.authenticate(getRequest(), getResponse())) {
         	setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        	return null;
+        	return;
         }
 
         try
@@ -130,7 +130,7 @@ public class ApplicationHandler extends ServerResource {
             
             if(applicationId == null || applicationId.isEmpty()) {
             	setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            	return null;
+            	return;
             }
             
             PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -144,9 +144,6 @@ public class ApplicationHandler extends ServerResource {
             } finally {
             	pm.close();
             }
-            
-            JSONObject jsonApp = app.toJSONObject();
-            return new JsonRepresentation(jsonApp);
         } catch(JSONException e) {
 			log.severe(e.getLocalizedMessage());
 			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -157,8 +154,6 @@ public class ApplicationHandler extends ServerResource {
             log.severe(e.getLocalizedMessage());
             setStatus(Status.SERVER_ERROR_INTERNAL);
         }
-        
-        return null;
 	}
 
 	@Post("json")

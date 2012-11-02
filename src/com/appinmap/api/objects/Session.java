@@ -1,5 +1,6 @@
 package com.appinmap.api.objects;
 
+import java.util.List;
 import java.util.Set;
 import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -27,7 +28,6 @@ public class Session {
 	@Persistent
     private Set<Beacon> beacons;
 
-	@Persistent
 	private String bundleId;
 	
 	@Persistent
@@ -48,6 +48,9 @@ public class Session {
 	@Persistent
 	private long endTime;
 	
+	@Persistent
+	private List<String> tags;
+
 	@Persistent
 	@Embedded(members = {
         @Persistent(name="latitude", columns=@Column(name="beginLatitude")),
@@ -162,6 +165,14 @@ public class Session {
 		this.applicationId = applicationId;
 	}
 	
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
+	}
+	
 	public static Session CreateSession(JSONObject object) throws JSONException {
 		if(object != null) {
 			Session session = new Session();
@@ -177,6 +188,15 @@ public class Session {
 			session.setSdkVersion(object.getString("sdkVersion"));
 			session.setStartTime(object.getLong("time"));
 			session.setStartLocation(Location.GetLocation(object.getJSONObject("location")));
+			
+			org.json.JSONArray tagArray = object.getJSONArray("tags");
+			if(tagArray != null) {
+				for (int i = 0; i < tagArray.length(); i++) {
+				    String tag = tagArray.getString(i);
+				    session.getTags().add(tag);
+				}
+			}
+			
 			return session;
 		}
 		

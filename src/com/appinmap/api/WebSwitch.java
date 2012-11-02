@@ -10,6 +10,7 @@ import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 
 import com.appinmap.api.handlers.ApplicationHandler;
+import com.appinmap.api.handlers.MessagingTokenHandler;
 import com.appinmap.api.handlers.SessionHandler;
 
 public class WebSwitch extends Application {
@@ -20,6 +21,8 @@ public class WebSwitch extends Application {
         
 		Router router = new Router(getContext());
 		router.attach("/session/{method}",SessionHandler.class);
+		router.attach("/messaging_token",MessagingTokenHandler.class);
+		router.attach("/messaging_token/{device_token}",MessagingTokenHandler.class);
 		router.attach("/application",ApplicationHandler.class);
 		router.attach("/application/{applicationId}",ApplicationHandler.class);
 		authenticatior.setNext(router);
