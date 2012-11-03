@@ -1,5 +1,6 @@
 package com.appinmap.api.handlers;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -17,7 +18,9 @@ import org.restlet.resource.ServerResource;
 
 import com.appinmap.api.WebSwitch;
 import com.appinmap.api.objects.Application;
+import com.appinmap.api.objects.MessagingToken;
 import com.appinmap.api.objects.PMF;
+import com.appinmap.api.objects.Session;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -94,6 +97,38 @@ public class ApplicationHandler extends ServerResource {
             setStatus(Status.SUCCESS_ACCEPTED);
             
             JSONObject jsonApp = app.toJSONObject();
+            
+            javax.jdo.Query query = pm.newQuery(Session.class);
+    	    query.setFilter("applicationId == appParam");
+    	    query.declareParameters("String appParam");
+    	    
+    	    try {
+			  @SuppressWarnings("unchecked")
+			  List<Session> results = (List<Session>) query.execute(app.getKey().getName());
+	    	  if (!results.isEmpty()) {
+	    		  for(Session session : results) {    
+	    			  Session.Delete(session,pm);
+	    		  }
+	    	  } 
+		    } finally {
+		      query.closeAll();
+		    }
+    	    
+    	    javax.jdo.Query tokenQuery = pm.newQuery(MessagingToken.class);
+    	    tokenQuery.setFilter("applicationId == appParam");
+    	    tokenQuery.declareParameters("String appParam");
+    	    
+    	    try {
+			  @SuppressWarnings("unchecked")
+			  List<MessagingToken> results = (List<MessagingToken>) tokenQuery.execute(app.getKey().getName());
+	    	  if (!results.isEmpty()) {
+	    		  for(MessagingToken token : results) {    
+	    			  pm.deletePersistent(token);
+	    		  }
+	    	  } 
+		    } finally {
+		    	tokenQuery.closeAll();
+		    }
 
             try {
             	pm.deletePersistent(app);

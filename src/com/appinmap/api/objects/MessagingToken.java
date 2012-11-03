@@ -1,5 +1,6 @@
 package com.appinmap.api.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -7,6 +8,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +36,9 @@ public class MessagingToken {
 	
 	@Persistent
 	private String sdkVersion;
+	
+	@Persistent
+	private Platform platform;
 	
 	@Persistent
 	private long last_registration_time;
@@ -108,6 +113,14 @@ public class MessagingToken {
 		this.tags = tags;
 	}
 	
+	public Platform getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(Platform platform) {
+		this.platform = platform;
+	}
+	
 	public boolean isActive() {
 		return active;
 	}
@@ -125,20 +138,35 @@ public class MessagingToken {
 
 			token.setApplicationId(object.getString("applicationId"));
 			token.setBundleId(object.getString("bundleId"));
-			org.json.JSONArray deviceIdArray = object.getJSONArray("deviceIds");
+			
+			JSONArray deviceIdArray = null;
+			if(object.getString("deviceIds").getClass().equals(JSONArray.class))
+				deviceIdArray = object.getJSONArray("deviceIds");
+			else 
+				deviceIdArray = new JSONArray(object.getString("deviceIds"));
+			
 			if(deviceIdArray != null) {
 				for (int i = 0; i < deviceIdArray.length(); i++) {
-				    token.getDeviceIds().add( deviceIdArray.getString(i));
+					if(token.getDeviceIds() == null)
+						token.setDeviceIds(new ArrayList<String>());
+					token.getDeviceIds().add(deviceIdArray.getString(i));
 				}
 			}
 			token.setAppVersion(object.getString("appVersion"));
 			token.setSdkVersion(object.getString("sdkVersion"));
+			token.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			token.setLast_registration_time(object.getLong("time"));
 			token.setActive(true);
 		
-			org.json.JSONArray tagArray = object.getJSONArray("tags");
+			JSONArray tagArray = null;
+			if(object.getString("tags").getClass().equals(JSONArray.class))
+				tagArray = object.getJSONArray("tags");
+			else 
+				tagArray = new JSONArray(object.getString("tags"));
 			if(tagArray != null) {
 				for (int i = 0; i < tagArray.length(); i++) {
+					if(token.getTags() == null)
+						token.setTags(new ArrayList<String>());
 				    String tag = tagArray.getString(i);
 				    token.getTags().add(tag);
 				}
@@ -152,10 +180,17 @@ public class MessagingToken {
 	
 	public void update(JSONObject object) throws JSONException {
 		if(object != null) {
-			org.json.JSONArray deviceIdArray = object.getJSONArray("deviceIds");
+			JSONArray deviceIdArray = null;
+			if(object.getString("deviceIds").getClass().equals(JSONArray.class))
+				deviceIdArray = object.getJSONArray("deviceIds");
+			else 
+				deviceIdArray = new JSONArray(object.getString("deviceIds"));
+			
 			if(deviceIdArray != null) {
 				for (int i = 0; i < deviceIdArray.length(); i++) {
 					String deviceId = deviceIdArray.getString(i);
+					if(this.getDeviceIds() == null)
+						this.setDeviceIds(new ArrayList<String>());
 					if(!this.getDeviceIds().contains(deviceId))
 						this.getDeviceIds().add(deviceId);
 				}
@@ -163,10 +198,18 @@ public class MessagingToken {
 			this.setAppVersion(object.getString("appVersion"));
 			this.setSdkVersion(object.getString("sdkVersion"));
 			this.setActive(object.getBoolean("active"));
+			this.setLast_registration_time(object.getLong("time"));
+			this.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			
-			org.json.JSONArray tagArray = object.getJSONArray("tags");
+			JSONArray tagArray = null;
+			if(object.getString("tags").getClass().equals(JSONArray.class))
+				tagArray = object.getJSONArray("tags");
+			else 
+				tagArray = new JSONArray(object.getString("tags"));
 			if(tagArray != null) {
 				for (int i = 0; i < tagArray.length(); i++) {
+					if(this.getTags() == null)
+						this.setTags(new ArrayList<String>());
 				    String tag = tagArray.getString(i);
 				    this.getTags().add(tag);
 				}

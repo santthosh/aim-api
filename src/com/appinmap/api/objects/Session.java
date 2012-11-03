@@ -2,7 +2,8 @@ package com.appinmap.api.objects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -28,7 +29,7 @@ public class Session {
     private String applicationId;
 
 	@Persistent
-    private Set<Beacon> beacons;
+    private List<Beacon> beacons;
 
 	private String bundleId;
 	
@@ -40,6 +41,9 @@ public class Session {
 	
 	@Persistent
 	private String sdkVersion;
+	
+	@Persistent
+	private Platform platform;
 	
 	@Persistent
 	private long startTime;
@@ -140,11 +144,11 @@ public class Session {
 		this.endLocation = endLocation;
 	}
 	
-	public Set<Beacon> getBeacons() {
+	public List<Beacon> getBeacons() {
 		return beacons;
 	}
 
-	public void setBeacons(Set<Beacon> beacons) {
+	public void setBeacons(List<Beacon> beacons) {
 		this.beacons = beacons;
 	}
 	
@@ -164,7 +168,15 @@ public class Session {
 		this.tags = tags;
 	}
 	
-	public static Session CreateSession(JSONObject object) throws JSONException {
+	public Platform getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(Platform platform) {
+		this.platform = platform;
+	}
+	
+	public static Session Create(JSONObject object) throws JSONException {
 		if(object != null) {
 			Session session = new Session();
 			
@@ -189,6 +201,7 @@ public class Session {
 			}
 			session.setAppVersion(object.getString("appVersion"));
 			session.setSdkVersion(object.getString("sdkVersion"));
+			session.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			session.setStartTime(object.getLong("time"));
 			session.setStartLocation(Location.GetLocation(object.getJSONObject("location")));
 
@@ -211,5 +224,16 @@ public class Session {
 		}
 		
 		return null;	
+	}
+	
+	/*
+	 * Delete cascade
+	 */
+	public static void Delete(Session session,PersistenceManager pm) {
+		for(Beacon beacon : session.getBeacons()) {
+            pm.deletePersistent(beacon);
+		}
+		
+		pm.deletePersistent(session);
 	}
 }

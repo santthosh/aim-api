@@ -92,11 +92,13 @@ public class MessagingTokenHandler extends ServerResource {
 
             setStatus(Status.SUCCESS_CREATED);
         } catch(JSONException e) {
-			log.severe(e.getLocalizedMessage());
+			log.severe("JSONException : " + e.getLocalizedMessage());
+			e.printStackTrace();
 			setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 		}
         catch(Exception e) {
-            log.severe(e.getLocalizedMessage());
+            log.severe("Exception: " + e.getLocalizedMessage());
+            e.printStackTrace();
             setStatus(Status.SERVER_ERROR_INTERNAL);
         }
     }

@@ -38,7 +38,7 @@ public class SessionHandler extends ServerResource {
 	        if(!app.getBundleId().equalsIgnoreCase(json.getString("bundleId")))
 	        	return Status.CLIENT_ERROR_EXPECTATION_FAILED;
             
-            Session session = Session.CreateSession(json);	
+            Session session = Session.Create(json);	
             
             try {
             	pm.makePersistent(session);

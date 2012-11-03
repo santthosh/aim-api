@@ -1,6 +1,6 @@
 package com.appinmap.api.objects;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.Embedded;
@@ -60,7 +60,7 @@ public class Beacon {
 	        Session session = pm.getObjectById(Session.class, key);
 	        
 	        if(session.getBeacons() == null)
-	        	session.setBeacons(new HashSet<Beacon>());
+	        	session.setBeacons(new ArrayList<Beacon>());
 	        session.getBeacons().add(beacon);
 	        
 			return beacon;
