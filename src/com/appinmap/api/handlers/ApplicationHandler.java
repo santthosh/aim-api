@@ -69,6 +69,8 @@ public class ApplicationHandler extends ServerResource {
 	}
 	
 	@Delete
+	//TODO: Someday we have to offload this to some other backend service where 
+	//cascade deletes have to be handled gracefully
 	public JsonRepresentation delete() 
 	{
 		WebSwitch application = (WebSwitch) getApplication();
@@ -157,18 +159,21 @@ public class ApplicationHandler extends ServerResource {
 	}
 
 	@Post("json")
-    public void create(JsonRepresentation request)
-    {
+    public JsonRepresentation create(JsonRepresentation request)
+    {	
 		WebSwitch application = (WebSwitch) getApplication();
         if (!application.authenticate(getRequest(), getResponse())) {
         	setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        	return;
+        	return null;
         }
+        
+		JSONObject jsonObject = new JSONObject();
 
         try
         {
         	JSONObject json = ((JsonRepresentation) request).getJsonObject();
             Application app = Application.CreateApplication(json);	
+            jsonObject.put("applicationId", app.getKey().getName());
             
             PersistenceManager pm = PMF.get().getPersistenceManager();
             try {
@@ -186,5 +191,7 @@ public class ApplicationHandler extends ServerResource {
             log.severe(e.getLocalizedMessage());
             setStatus(Status.SERVER_ERROR_INTERNAL);
         }
+        
+        return new JsonRepresentation(jsonObject.toString());
     }
 }

@@ -48,13 +48,15 @@ public class SessionHandler extends ServerResource {
 
             return Status.SUCCESS_CREATED;
         } catch(JSONException e) {
-			log.severe(e.getLocalizedMessage());
+        	e.printStackTrace();
+			log.severe("JSONException : " + e.getMessage());
 			return Status.CLIENT_ERROR_BAD_REQUEST;
 		} catch(JDOObjectNotFoundException e) {
 			return Status.CLIENT_ERROR_NOT_FOUND;
 		}
         catch(Exception e) {
-            log.severe(e.getLocalizedMessage());
+        	e.printStackTrace();
+			log.severe("Exception : " + e.getMessage());
             return Status.SERVER_ERROR_INTERNAL;
         }
 	}

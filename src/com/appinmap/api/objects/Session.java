@@ -1,5 +1,6 @@
 package com.appinmap.api.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.jdo.annotations.Embedded;
@@ -9,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Column;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,10 +33,7 @@ public class Session {
 	private String bundleId;
 	
 	@Persistent
-	private String deviceId;
-	
-	@Persistent
-	private DeviceIdType deviceIdType;
+	private List<String> deviceIds;
 
 	@Persistent
 	private String appVersion;
@@ -85,12 +84,12 @@ public class Session {
 		this.bundleId = bundleId;
 	}
 
-	public String getDeviceId() {
-		return deviceId;
+	public List<String> getDeviceIds() {
+		return deviceIds;
 	}
 
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
+	public void setDeviceIds(List<String> deviceIds) {
+		this.deviceIds = deviceIds;
 	}
 
 	public String getAppVersion() {
@@ -141,14 +140,6 @@ public class Session {
 		this.endLocation = endLocation;
 	}
 	
-	public DeviceIdType getDeviceIdType() {
-		return deviceIdType;
-	}
-
-	public void setDeviceIdType(DeviceIdType deviceIdType) {
-		this.deviceIdType = deviceIdType;
-	}
-	
 	public Set<Beacon> getBeacons() {
 		return beacons;
 	}
@@ -182,17 +173,36 @@ public class Session {
 
 			session.setApplicationId(object.getString("applicationId"));
 			session.setBundleId(object.getString("bundleId"));
-			session.setDeviceId(object.getString("deviceId"));
-			session.setDeviceIdType(DeviceIdType.GetDeviceIdType(object.getInt("deviceIdType")));
+			
+			JSONArray deviceIdArray = null;
+			if(object.getString("deviceIds").getClass().equals(JSONArray.class))
+				deviceIdArray = object.getJSONArray("deviceIds");
+			else 
+				deviceIdArray = new JSONArray(object.getString("deviceIds"));
+
+			if(deviceIdArray != null) {
+				for (int i = 0; i < deviceIdArray.length(); i++) {
+					if(session.getDeviceIds() == null)
+						session.setDeviceIds(new ArrayList<String>());
+				    session.getDeviceIds().add(deviceIdArray.getString(i));
+				}
+			}
 			session.setAppVersion(object.getString("appVersion"));
 			session.setSdkVersion(object.getString("sdkVersion"));
 			session.setStartTime(object.getLong("time"));
 			session.setStartLocation(Location.GetLocation(object.getJSONObject("location")));
+
+			JSONArray tagArray = null;
+			if(object.getString("tags").getClass().equals(JSONArray.class))
+				tagArray = object.getJSONArray("tags");
+			else 
+				tagArray = new JSONArray(object.getString("tags"));
 			
-			org.json.JSONArray tagArray = object.getJSONArray("tags");
 			if(tagArray != null) {
 				for (int i = 0; i < tagArray.length(); i++) {
 				    String tag = tagArray.getString(i);
+					if(session.getTags() == null)
+						session.setTags(new ArrayList<String>());
 				    session.getTags().add(tag);
 				}
 			}

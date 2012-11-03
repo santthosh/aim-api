@@ -27,10 +27,7 @@ public class MessagingToken {
 	private String bundleId;
 	
 	@Persistent
-	private String deviceId;
-	
-	@Persistent
-	private DeviceIdType deviceIdType;
+	private List<String> deviceIds;
 
 	@Persistent
 	private String appVersion;
@@ -71,20 +68,12 @@ public class MessagingToken {
 		this.bundleId = bundleId;
 	}
 
-	public String getDeviceId() {
-		return deviceId;
+	public List<String> getDeviceIds() {
+		return deviceIds;
 	}
 
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
-
-	public DeviceIdType getDeviceIdType() {
-		return deviceIdType;
-	}
-
-	public void setDeviceIdType(DeviceIdType deviceIdType) {
-		this.deviceIdType = deviceIdType;
+	public void setDeviceIds(List<String> deviceId) {
+		this.deviceIds = deviceId;
 	}
 
 	public String getAppVersion() {
@@ -136,8 +125,12 @@ public class MessagingToken {
 
 			token.setApplicationId(object.getString("applicationId"));
 			token.setBundleId(object.getString("bundleId"));
-			token.setDeviceId(object.getString("deviceId"));
-			token.setDeviceIdType(DeviceIdType.GetDeviceIdType(object.getInt("deviceIdType")));
+			org.json.JSONArray deviceIdArray = object.getJSONArray("deviceIds");
+			if(deviceIdArray != null) {
+				for (int i = 0; i < deviceIdArray.length(); i++) {
+				    token.getDeviceIds().add( deviceIdArray.getString(i));
+				}
+			}
 			token.setAppVersion(object.getString("appVersion"));
 			token.setSdkVersion(object.getString("sdkVersion"));
 			token.setLast_registration_time(object.getLong("time"));
@@ -159,8 +152,14 @@ public class MessagingToken {
 	
 	public void update(JSONObject object) throws JSONException {
 		if(object != null) {
-			this.setDeviceId(object.getString("deviceId"));
-			this.setDeviceIdType(DeviceIdType.GetDeviceIdType(object.getInt("deviceIdType")));
+			org.json.JSONArray deviceIdArray = object.getJSONArray("deviceIds");
+			if(deviceIdArray != null) {
+				for (int i = 0; i < deviceIdArray.length(); i++) {
+					String deviceId = deviceIdArray.getString(i);
+					if(!this.getDeviceIds().contains(deviceId))
+						this.getDeviceIds().add(deviceId);
+				}
+			}
 			this.setAppVersion(object.getString("appVersion"));
 			this.setSdkVersion(object.getString("sdkVersion"));
 			this.setActive(object.getBoolean("active"));
