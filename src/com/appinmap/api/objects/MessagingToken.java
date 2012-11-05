@@ -47,6 +47,9 @@ public class MessagingToken {
 	private List<String> tags;
 	
 	@Persistent
+	private List<String> deviceSpecs;
+
+	@Persistent
 	private boolean active;
 
 	public Key getKey() {
@@ -129,6 +132,14 @@ public class MessagingToken {
 		this.active = active;
 	}
 	
+	public List<String> getDeviceSpecs() {
+		return deviceSpecs;
+	}
+
+	public void setDeviceSpecs(List<String> deviceSpecs) {
+		this.deviceSpecs = deviceSpecs;
+	}
+	
 	public static MessagingToken CreateMessagingToken(JSONObject object) throws JSONException {
 		if(object != null) {
 			MessagingToken token = new MessagingToken();
@@ -154,6 +165,21 @@ public class MessagingToken {
 			}
 			token.setAppVersion(object.getString("appVersion"));
 			token.setSdkVersion(object.getString("sdkVersion"));
+			
+			JSONArray deviceSpecsArray = null;
+			if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
+				deviceSpecsArray = object.getJSONArray("deviceSpecs");
+			else 
+				deviceSpecsArray = new JSONArray(object.getString("deviceSpecs"));
+
+			if(deviceSpecsArray != null) {
+				for (int i = 0; i < deviceSpecsArray.length(); i++) {
+					if(token.getDeviceSpecs() == null)
+						token.setDeviceSpecs(new ArrayList<String>());
+					token.getDeviceSpecs().add(deviceSpecsArray.getString(i));
+				}
+			}
+			
 			token.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			token.setLast_registration_time(object.getLong("time"));
 			token.setActive(true);
@@ -197,6 +223,22 @@ public class MessagingToken {
 			}
 			this.setAppVersion(object.getString("appVersion"));
 			this.setSdkVersion(object.getString("sdkVersion"));
+			
+			
+			JSONArray deviceSpecsArray = null;
+			if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
+				deviceSpecsArray = object.getJSONArray("deviceSpecs");
+			else 
+				deviceSpecsArray = new JSONArray(object.getString("deviceSpecs"));
+
+			if(deviceSpecsArray != null) {
+				for (int i = 0; i < deviceSpecsArray.length(); i++) {
+					if(this.getDeviceSpecs() == null)
+						this.setDeviceSpecs(new ArrayList<String>());
+					this.getDeviceSpecs().add(deviceSpecsArray.getString(i));
+				}
+			}
+			
 			this.setActive(object.getBoolean("active"));
 			this.setLast_registration_time(object.getLong("time"));
 			this.setPlatform(Platform.GetPlatform(object.getInt("platform")));

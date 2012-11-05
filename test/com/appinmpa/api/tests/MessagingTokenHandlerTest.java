@@ -90,6 +90,7 @@ public class MessagingTokenHandlerTest {
 		deviceIds.put("IDAd="+UUID.randomUUID().toString());
 		
 		jsonObject.put("deviceIds",deviceIds);
+		jsonObject.put("deviceSpecs", new JSONArray());
 		jsonObject.put("time", System.currentTimeMillis());
 		jsonObject.put("appVersion", "1.02.02");
 		jsonObject.put("sdkVersion", "0.1");
@@ -130,6 +131,7 @@ public class MessagingTokenHandlerTest {
 		deviceIds.put("IDAd="+UUID.randomUUID().toString());
 		
 		jsonObject.put("deviceIds",deviceIds);
+		jsonObject.put("deviceSpecs", new JSONArray());
 		jsonObject.put("time", System.currentTimeMillis());
 		jsonObject.put("active", false);
 		jsonObject.put("appVersion", "1.02.02");

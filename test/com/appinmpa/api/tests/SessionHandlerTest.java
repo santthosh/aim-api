@@ -97,6 +97,7 @@ public class SessionHandlerTest {
 		
 		jsonObject.put("location", locationObject);
 		jsonObject.put("tags", new JSONArray());
+		jsonObject.put("deviceSpecs", new JSONArray());
 		jsonObject.put("platform", application.getInt("platform"));
 		post.setEntity(new StringEntity(jsonObject.toString()));
 		

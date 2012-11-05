@@ -35,6 +35,9 @@ public class Session {
 	
 	@Persistent
 	private List<String> deviceIds;
+	
+	@Persistent
+	private List<String> deviceSpecs;
 
 	@Persistent
 	private String appVersion;
@@ -176,6 +179,14 @@ public class Session {
 		this.platform = platform;
 	}
 	
+	public List<String> getDeviceSpecs() {
+		return deviceSpecs;
+	}
+
+	public void setDeviceSpecs(List<String> deviceSpecs) {
+		this.deviceSpecs = deviceSpecs;
+	}
+	
 	public static Session Create(JSONObject object) throws JSONException {
 		if(object != null) {
 			Session session = new Session();
@@ -201,6 +212,21 @@ public class Session {
 			}
 			session.setAppVersion(object.getString("appVersion"));
 			session.setSdkVersion(object.getString("sdkVersion"));
+
+			JSONArray deviceSpecsArray = null;
+			if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
+				deviceSpecsArray = object.getJSONArray("deviceSpecs");
+			else 
+				deviceSpecsArray = new JSONArray(object.getString("deviceSpecs"));
+
+			if(deviceSpecsArray != null) {
+				for (int i = 0; i < deviceSpecsArray.length(); i++) {
+					if(session.getDeviceSpecs() == null)
+						session.setDeviceSpecs(new ArrayList<String>());
+				    session.getDeviceSpecs().add(deviceSpecsArray.getString(i));
+				}
+			}
+			
 			session.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			session.setStartTime(object.getLong("time"));
 			session.setStartLocation(Location.GetLocation(object.getJSONObject("location")));
