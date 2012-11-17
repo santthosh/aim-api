@@ -14,6 +14,10 @@ import org.json.JSONObject;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.gson.Gson;
 
 @PersistenceCapable
 public class MessagingToken {
@@ -111,6 +115,18 @@ public class MessagingToken {
 	public List<String> getTags() {
 		return tags;
 	}
+	
+	public String getTagsAsString() {
+	    StringBuilder sb = new StringBuilder();
+	    String loopDelim = "";
+	    for(String s : getTags()) {
+	        sb.append(loopDelim);
+	        sb.append(s);            
+	        loopDelim = ",";
+	    }
+
+	    return sb.toString();
+	}
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
@@ -198,6 +214,12 @@ public class MessagingToken {
 				}
 			}
 			
+			// Push this to tokens task queue so that it can be processed by external systems like BrightPush
+			Gson gson = new Gson();
+			Queue q = QueueFactory.getQueue("tokens-create");
+			System.out.println(gson.toJson(token).toString());
+			q.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).payload(gson.toJson(token).toString()));
+			
 			return token;
 		}
 		
@@ -256,6 +278,12 @@ public class MessagingToken {
 				    this.getTags().add(tag);
 				}
 			}
+			
+			// Push this to tokens task queue so that it can be processed by external systems like BrightPush
+			Gson gson = new Gson();
+			Queue q = QueueFactory.getQueue("tokens-update");
+			System.out.println(gson.toJson(this).toString());
+			q.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).payload(gson.toJson(this).toString()));
 		}	
 	}
 }

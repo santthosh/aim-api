@@ -21,7 +21,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class MessagingTokenHandler extends ServerResource {
 	
-	private static final Logger log = Logger.getLogger(ApplicationHandler.class.getName());
+	private static final Logger log = Logger.getLogger(MessagingTokenHandler.class.getName());
 	
 	public MessagingTokenHandler()
     {

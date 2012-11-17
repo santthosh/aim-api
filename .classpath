@@ -7,13 +7,14 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.json.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="libs/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/fluent-hc-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/httpclient-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/httpclient-cache-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.2.2.jar"/>
-	<classpathentry kind="lib" path="libs/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="libs/fluent-hc-4.2.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (1)"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
