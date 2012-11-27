@@ -3,6 +3,7 @@ package com.appinmap.api.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -156,71 +157,77 @@ public class MessagingToken {
 		this.deviceSpecs = deviceSpecs;
 	}
 	
-	public static MessagingToken CreateMessagingToken(JSONObject object) throws JSONException {
+	public static MessagingToken CreateMessagingToken(JSONObject object,PersistenceManager pm) throws JSONException {
 		if(object != null) {
 			MessagingToken token = new MessagingToken();
 			
 			Key key = KeyFactory.createKey(MessagingToken.class.getSimpleName(),object.getString("device_token"));
-			token.setKey(key);
+			MessagingToken messagingToken = pm.getObjectById(MessagingToken.class, key);
+			
+			if(messagingToken != null) {
+				messagingToken.update(object);
+				return messagingToken;
+			} else {
+				token.setKey(key);
 
-			token.setApplicationId(object.getString("applicationId"));
-			token.setBundleId(object.getString("bundleId"));
-			
-			JSONArray deviceIdArray = null;
-			if(object.getString("deviceIds").getClass().equals(JSONArray.class))
-				deviceIdArray = object.getJSONArray("deviceIds");
-			else 
-				deviceIdArray = new JSONArray(object.getString("deviceIds"));
-			
-			if(deviceIdArray != null) {
-				for (int i = 0; i < deviceIdArray.length(); i++) {
-					if(token.getDeviceIds() == null)
-						token.setDeviceIds(new ArrayList<String>());
-					token.getDeviceIds().add(deviceIdArray.getString(i));
+				token.setApplicationId(object.getString("applicationId"));
+				token.setBundleId(object.getString("bundleId"));
+				
+				JSONArray deviceIdArray = null;
+				if(object.getString("deviceIds").getClass().equals(JSONArray.class))
+					deviceIdArray = object.getJSONArray("deviceIds");
+				else 
+					deviceIdArray = new JSONArray(object.getString("deviceIds"));
+				
+				if(deviceIdArray != null) {
+					for (int i = 0; i < deviceIdArray.length(); i++) {
+						if(token.getDeviceIds() == null)
+							token.setDeviceIds(new ArrayList<String>());
+						token.getDeviceIds().add(deviceIdArray.getString(i));
+					}
 				}
-			}
-			token.setAppVersion(object.getString("appVersion"));
-			token.setSdkVersion(object.getString("sdkVersion"));
-			
-			JSONArray deviceSpecsArray = null;
-			if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
-				deviceSpecsArray = object.getJSONArray("deviceSpecs");
-			else 
-				deviceSpecsArray = new JSONArray(object.getString("deviceSpecs"));
+				token.setAppVersion(object.getString("appVersion"));
+				token.setSdkVersion(object.getString("sdkVersion"));
+				
+				JSONArray deviceSpecsArray = null;
+				if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
+					deviceSpecsArray = object.getJSONArray("deviceSpecs");
+				else 
+					deviceSpecsArray = new JSONArray(object.getString("deviceSpecs"));
 
-			if(deviceSpecsArray != null) {
-				for (int i = 0; i < deviceSpecsArray.length(); i++) {
-					if(token.getDeviceSpecs() == null)
-						token.setDeviceSpecs(new ArrayList<String>());
-					token.getDeviceSpecs().add(deviceSpecsArray.getString(i));
+				if(deviceSpecsArray != null) {
+					for (int i = 0; i < deviceSpecsArray.length(); i++) {
+						if(token.getDeviceSpecs() == null)
+							token.setDeviceSpecs(new ArrayList<String>());
+						token.getDeviceSpecs().add(deviceSpecsArray.getString(i));
+					}
 				}
-			}
+				
+				token.setPlatform(Platform.GetPlatform(object.getInt("platform")));
+				token.setLast_registration_time(object.getLong("time"));
+				token.setActive(true);
 			
-			token.setPlatform(Platform.GetPlatform(object.getInt("platform")));
-			token.setLast_registration_time(object.getLong("time"));
-			token.setActive(true);
-		
-			JSONArray tagArray = null;
-			if(object.getString("tags").getClass().equals(JSONArray.class))
-				tagArray = object.getJSONArray("tags");
-			else 
-				tagArray = new JSONArray(object.getString("tags"));
-			if(tagArray != null) {
-				for (int i = 0; i < tagArray.length(); i++) {
-					if(token.getTags() == null)
-						token.setTags(new ArrayList<String>());
-				    String tag = tagArray.getString(i);
-				    token.getTags().add(tag);
+				JSONArray tagArray = null;
+				if(object.getString("tags").getClass().equals(JSONArray.class))
+					tagArray = object.getJSONArray("tags");
+				else 
+					tagArray = new JSONArray(object.getString("tags"));
+				if(tagArray != null) {
+					for (int i = 0; i < tagArray.length(); i++) {
+						if(token.getTags() == null)
+							token.setTags(new ArrayList<String>());
+					    String tag = tagArray.getString(i);
+					    token.getTags().add(tag);
+					}
 				}
+				
+				// Push this to tokens task queue so that it can be processed by external systems like BrightPush
+				Gson gson = new Gson();
+				Queue q = QueueFactory.getQueue("tokens-create");
+				q.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).payload(gson.toJson(token).toString()));
+				
+				return token;
 			}
-			
-			// Push this to tokens task queue so that it can be processed by external systems like BrightPush
-			Gson gson = new Gson();
-			Queue q = QueueFactory.getQueue("tokens-create");
-			System.out.println(gson.toJson(token).toString());
-			q.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).payload(gson.toJson(token).toString()));
-			
-			return token;
 		}
 		
 		return null;	
@@ -261,7 +268,9 @@ public class MessagingToken {
 				}
 			}
 			
-			this.setActive(object.getBoolean("active"));
+			if(object.has("active")) {
+				this.setActive(object.getBoolean("active"));	
+			}
 			this.setLast_registration_time(object.getLong("time"));
 			this.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			
@@ -282,7 +291,6 @@ public class MessagingToken {
 			// Push this to tokens task queue so that it can be processed by external systems like BrightPush
 			Gson gson = new Gson();
 			Queue q = QueueFactory.getQueue("tokens-update");
-			System.out.println(gson.toJson(this).toString());
 			q.add(TaskOptions.Builder.withMethod(TaskOptions.Method.PULL).payload(gson.toJson(this).toString()));
 		}	
 	}

@@ -5,6 +5,10 @@
     <retry-parameters>
       <task-retry-limit>7</task-retry-limit>
     </retry-parameters>
+    <acl>
+      <user-email>santthosh@appinmap.com</user-email>  <!-- can list, get, lease, and delete tasks -->
+      <user-email>626377846206@developer.gserviceaccount.com</user-email>  <!-- can list, get, lease, and delete tasks -->
+    </acl>
   </queue>
   <queue>
     <name>tokens-update</name>
@@ -12,5 +16,9 @@
     <retry-parameters>
       <task-retry-limit>7</task-retry-limit>
     </retry-parameters>
+    <acl>
+      <user-email>santthosh@appinmap.com</user-email>  <!-- can list, get, lease, and delete tasks -->
+      <user-email>626377846206@developer.gserviceaccount.com</user-email>  <!-- can list, get, lease, and delete tasks -->
+    </acl>
   </queue>
 </queue-entries>

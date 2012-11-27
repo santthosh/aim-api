@@ -81,9 +81,9 @@ public class MessagingTokenHandler extends ServerResource {
         try
         {
         	JSONObject json = ((JsonRepresentation) request).getJsonObject();
-        	MessagingToken token = MessagingToken.CreateMessagingToken(json);	
-            
             PersistenceManager pm = PMF.get().getPersistenceManager();
+        	MessagingToken token = MessagingToken.CreateMessagingToken(json,pm);	
+            
             try {
             	pm.makePersistent(token);
             } finally {
