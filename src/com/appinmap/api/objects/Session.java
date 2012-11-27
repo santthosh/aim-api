@@ -49,6 +49,9 @@ public class Session {
 	private Platform platform;
 	
 	@Persistent
+	private boolean testMode;
+	
+	@Persistent
 	private long startTime;
 	
 	@Persistent
@@ -187,6 +190,14 @@ public class Session {
 		this.deviceSpecs = deviceSpecs;
 	}
 	
+	public boolean isTestMode() {
+		return testMode;
+	}
+
+	public void setTestMode(boolean testMode) {
+		this.testMode = testMode;
+	}
+	
 	public static Session Create(JSONObject object) throws JSONException {
 		if(object != null) {
 			Session session = new Session();
@@ -212,6 +223,11 @@ public class Session {
 			}
 			session.setAppVersion(object.getString("appVersion"));
 			session.setSdkVersion(object.getString("sdkVersion"));
+			
+			if(object.has("testMode"))
+				session.setTestMode(object.getBoolean("testMode"));
+			else
+				session.setTestMode(false);
 
 			JSONArray deviceSpecsArray = null;
 			if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
