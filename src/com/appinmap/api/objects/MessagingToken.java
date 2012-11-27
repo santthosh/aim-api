@@ -3,6 +3,7 @@ package com.appinmap.api.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -44,6 +45,9 @@ public class MessagingToken {
 	
 	@Persistent
 	private Platform platform;
+	
+	@Persistent
+	private boolean TestMode;
 	
 	@Persistent
 	private long last_registration_time;
@@ -157,12 +161,26 @@ public class MessagingToken {
 		this.deviceSpecs = deviceSpecs;
 	}
 	
+	public boolean isTestMode() {
+		return TestMode;
+	}
+
+	public void setTestMode(boolean testMode) {
+		TestMode = testMode;
+	}
+	
 	public static MessagingToken CreateMessagingToken(JSONObject object,PersistenceManager pm) throws JSONException {
 		if(object != null) {
 			MessagingToken token = new MessagingToken();
 			
 			Key key = KeyFactory.createKey(MessagingToken.class.getSimpleName(),object.getString("device_token"));
-			MessagingToken messagingToken = pm.getObjectById(MessagingToken.class, key);
+			
+			MessagingToken messagingToken = null;
+			try {
+				messagingToken = pm.getObjectById(MessagingToken.class, key);
+			} catch(JDOObjectNotFoundException e) {
+				messagingToken = null;
+			}
 			
 			if(messagingToken != null) {
 				messagingToken.update(object);
@@ -188,6 +206,11 @@ public class MessagingToken {
 				}
 				token.setAppVersion(object.getString("appVersion"));
 				token.setSdkVersion(object.getString("sdkVersion"));
+				
+				if(object.has("testMode"))
+					token.setTestMode(object.getBoolean("testMode"));
+				else
+					token.setTestMode(false);
 				
 				JSONArray deviceSpecsArray = null;
 				if(object.getString("deviceSpecs").getClass().equals(JSONArray.class))
@@ -271,6 +294,10 @@ public class MessagingToken {
 			if(object.has("active")) {
 				this.setActive(object.getBoolean("active"));	
 			}
+			
+			if(object.has("testMode"))
+				this.setTestMode(object.getBoolean("testMode"));
+			
 			this.setLast_registration_time(object.getLong("time"));
 			this.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			
