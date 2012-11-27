@@ -47,7 +47,7 @@ public class MessagingToken {
 	private Platform platform;
 	
 	@Persistent
-	private boolean TestMode;
+	private boolean testMode;
 	
 	@Persistent
 	private long last_registration_time;
@@ -162,11 +162,11 @@ public class MessagingToken {
 	}
 	
 	public boolean isTestMode() {
-		return TestMode;
+		return testMode;
 	}
 
 	public void setTestMode(boolean testMode) {
-		TestMode = testMode;
+		this.testMode = testMode;
 	}
 	
 	public static MessagingToken CreateMessagingToken(JSONObject object,PersistenceManager pm) throws JSONException {
