@@ -38,7 +38,8 @@ public class SessionHandler extends ServerResource {
 	        if(!app.getBundleId().equalsIgnoreCase(json.getString("bundleId")))
 	        	return Status.CLIENT_ERROR_EXPECTATION_FAILED;
             
-            Session session = Session.Create(json);	
+	        String ipAddress = this.getClientInfo().getAddress();
+            Session session = Session.Create(json,ipAddress);	
             
             try {
             	pm.makePersistent(session);
@@ -68,7 +69,8 @@ public class SessionHandler extends ServerResource {
         	PersistenceManager pm = PMF.get().getPersistenceManager();
         	
             try {
-                Beacon beacon = Beacon.CreateBeacon(json, pm);
+    	        String ipAddress = this.getClientInfo().getAddress();
+                Beacon beacon = Beacon.CreateBeacon(json,ipAddress, pm);
             	pm.makePersistent(beacon);
             } finally {
             	pm.close();
@@ -95,7 +97,8 @@ public class SessionHandler extends ServerResource {
         	PersistenceManager pm = PMF.get().getPersistenceManager();
         	
             try {
-                Beacon beacon = Beacon.EndSession(json, pm);
+    	        String ipAddress = this.getClientInfo().getAddress();
+                Beacon beacon = Beacon.EndSession(json,ipAddress, pm);
             	pm.makePersistent(beacon);
             } finally {
             	pm.close();

@@ -66,6 +66,7 @@ public class Session {
         @Persistent(name="longitude", columns=@Column(name="beginLongitude")),
         @Persistent(name="accuracy", columns=@Column(name="beginAccuracy")),
         @Persistent(name="altitude", columns=@Column(name="beginAltitude")),
+        @Persistent(name="ipAddress", columns=@Column(name="beginIPAddress")),
 	})
 	private Location startLocation;
 
@@ -75,6 +76,7 @@ public class Session {
         @Persistent(name="longitude", columns=@Column(name="endLongitude")),
         @Persistent(name="accuracy", columns=@Column(name="endAccuracy")),
         @Persistent(name="altitude", columns=@Column(name="endAltitude")),
+        @Persistent(name="ipAddress", columns=@Column(name="endIPAddress")),
     })
 	private Location endLocation;
 	
@@ -198,7 +200,7 @@ public class Session {
 		this.testMode = testMode;
 	}
 	
-	public static Session Create(JSONObject object) throws JSONException {
+	public static Session Create(JSONObject object,String ipAddress) throws JSONException {
 		if(object != null) {
 			Session session = new Session();
 			
@@ -245,7 +247,7 @@ public class Session {
 			
 			session.setPlatform(Platform.GetPlatform(object.getInt("platform")));
 			session.setStartTime(object.getLong("time"));
-			session.setStartLocation(Location.GetLocation(object.getJSONObject("location")));
+			session.setStartLocation(Location.GetLocation(object.getJSONObject("location"),ipAddress));
 
 			JSONArray tagArray = null;
 			if(object.getString("tags").getClass().equals(JSONArray.class))

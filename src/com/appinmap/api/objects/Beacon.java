@@ -48,12 +48,12 @@ public class Beacon {
 		this.location = location;
 	}
 	
-	public static Beacon CreateBeacon(JSONObject object,PersistenceManager pm) throws JSONException {
+	public static Beacon CreateBeacon(JSONObject object,String ipAddress,PersistenceManager pm) throws JSONException {
 		if(object != null) {
 			Beacon beacon = new Beacon();
 			
 	        beacon.setTime(object.getLong("time"));
-	        beacon.setLocation(Location.GetLocation(object.getJSONObject("location")));
+	        beacon.setLocation(Location.GetLocation(object.getJSONObject("location"),ipAddress));
 	        
 			String sessionId = object.getString("sessionId");
 	        Key key = KeyFactory.createKey(Session.class.getSimpleName(), sessionId);
@@ -69,12 +69,12 @@ public class Beacon {
 		return null;	
 	}
 	
-	public static Beacon EndSession(JSONObject object,PersistenceManager pm) throws JSONException {
+	public static Beacon EndSession(JSONObject object,String ipAddress,PersistenceManager pm) throws JSONException {
 		if(object != null) {
 			Beacon beacon = new Beacon();
 			
 	        beacon.setTime(object.getLong("time"));
-	        beacon.setLocation(Location.GetLocation(object.getJSONObject("location")));
+	        beacon.setLocation(Location.GetLocation(object.getJSONObject("location"),ipAddress));
 	        
 			String sessionId = object.getString("sessionId");
 	        Key key = KeyFactory.createKey(Session.class.getSimpleName(), sessionId);

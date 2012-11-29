@@ -12,6 +12,9 @@ import org.json.JSONObject;
 public class Location {
 	
 	@Persistent
+	private String ipAddress;
+	
+	@Persistent
 	private double latitude;
 
 	@Persistent
@@ -55,13 +58,22 @@ public class Location {
 		this.altitude = altitude;
 	}
 	
-	public static Location GetLocation(JSONObject object) throws JSONException {
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+	
+	public static Location GetLocation(JSONObject object,String ipAddress) throws JSONException {
 		if(object != null) {
 			Location location = new Location();
 			
 			location.setLatitude(object.getDouble("latitude"));
 			location.setLongitude(object.getDouble("longitude"));
 			location.setAccuracy(object.getDouble("accuracy"));
+			location.setIpAddress(ipAddress);
 			//We are ignoring altitude until there is a need for it
 			
 			return location;
