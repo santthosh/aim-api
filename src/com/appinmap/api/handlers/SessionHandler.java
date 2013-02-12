@@ -28,7 +28,9 @@ public class SessionHandler extends ServerResource {
     }
 	
 	private Status startSession(JsonRepresentation request) {
-		try
+		return Status.SUCCESS_CREATED;
+		// NOTE: Disabled
+		/*try
         {
         	JSONObject json = ((JsonRepresentation) request).getJsonObject();
             PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -59,11 +61,13 @@ public class SessionHandler extends ServerResource {
         	e.printStackTrace();
 			log.severe("Exception : " + e.getMessage());
             return Status.SERVER_ERROR_INTERNAL;
-        }
+        }*/
 	}
 	
 	private Status addBeacon(JsonRepresentation request) {
-		try
+		return Status.SUCCESS_CREATED;
+		// Disabled
+		/*try
         {
         	JSONObject json = ((JsonRepresentation) request).getJsonObject();
         	PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -87,11 +91,13 @@ public class SessionHandler extends ServerResource {
         	e.printStackTrace();
             log.severe(e.getLocalizedMessage());
             return Status.SERVER_ERROR_INTERNAL;
-        }
+        }*/
 	}
 	
 	private Status endSession(JsonRepresentation request) {
-		try
+		return Status.SUCCESS_CREATED;
+		// Disabled
+		/* try
         {
         	JSONObject json = ((JsonRepresentation) request).getJsonObject();
         	PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -114,7 +120,7 @@ public class SessionHandler extends ServerResource {
         catch(Exception e) {
             log.severe(e.getLocalizedMessage());
             return Status.SERVER_ERROR_INTERNAL;
-        }
+        }*/
 	}
 
 	@Post("json")
