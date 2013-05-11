@@ -30,7 +30,10 @@ public class MessagingTokenHandler extends ServerResource {
 	@Put("json")
 	public void update(JsonRepresentation request) 
 	{
-		WebSwitch application = (WebSwitch) getApplication();
+		setStatus(Status.SUCCESS_OK);
+		return;
+		
+		/*WebSwitch application = (WebSwitch) getApplication();
         if (!application.authenticate(getRequest(), getResponse())) {
         	setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         	return;
@@ -66,13 +69,16 @@ public class MessagingTokenHandler extends ServerResource {
         catch(Exception e) {
             log.severe(e.getLocalizedMessage());
             setStatus(Status.SERVER_ERROR_INTERNAL);
-        }
+        }*/
 	}
 
 	@Post("json")
     public void create(JsonRepresentation request)
     {
-		WebSwitch application = (WebSwitch) getApplication();
+		setStatus(Status.SUCCESS_CREATED);
+		return;
+		
+		/*WebSwitch application = (WebSwitch) getApplication();
         if (!application.authenticate(getRequest(), getResponse())) {
         	setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         	return;
@@ -100,6 +106,6 @@ public class MessagingTokenHandler extends ServerResource {
             log.severe("Exception: " + e.getLocalizedMessage());
             e.printStackTrace();
             setStatus(Status.SERVER_ERROR_INTERNAL);
-        }
+        }*/
     }
 }
